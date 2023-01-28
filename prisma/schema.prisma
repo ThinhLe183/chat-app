@@ -1,0 +1,79 @@
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+type ELastMessage {
+  id String @db.ObjectId
+  user_id String
+  msg String 
+  type MessageType
+  created_at DateTime
+  updated_at DateTime
+}
+
+type EUser {
+  id String @db.ObjectId
+  username String
+  avatar String?
+  name String
+}
+type EParticipant {
+  id String @db.ObjectId
+  name String
+  username String
+  avatar String?
+  nickname String?
+  last_seen DateTime?
+}
+enum ConversationType {
+  DM
+  GROUP_DM
+}
+enum MessageType {
+  TEXT
+  IMAGE
+  NOTIFY
+}
+model User {
+  id        String  @id @default(auto()) @map("_id") @db.ObjectId
+  username  String @unique()
+  avatar String?
+  name String
+  email String @unique  
+  password String
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+}
+
+model Conversation {
+  id        String  @id @default(auto()) @map("_id") @db.ObjectId
+  type ConversationType
+  name String?
+  icon String?
+  owner_id String? @db.ObjectId
+  participants EParticipant[] 
+  last_message ELastMessage?
+  total_messages_sent Int @default(0)
+  created_at DateTime @default(now())  
+  updated_at DateTime @updatedAt
+}
+
+model Message {
+  id        String  @id @default(auto()) @map("_id") @db.ObjectId
+  type MessageType
+  author EUser
+  conversation_id String @db.ObjectId
+  msg String
+  mentions String[]
+  attachments String[]
+  created_at DateTime @default(now())  
+  updated_at DateTime @updatedAt
+  @@index([conversation_id,created_at(sort: Desc)])
+}
+

@@ -1,0 +1,16 @@
+version: '3.8'
+services:
+  mongodb:
+    image: mongo:4.2.3-bionic
+    restart: always
+    container_name: mongo-database
+    ports:
+      - 27017:27017
+    volumes:
+      - mongodb-chat:/data/db
+    environment:
+      MONGO_INITDB_DATABASE: chat-app
+      MONGO_INITDB_ROOT_USERNAME: leducthinh183
+      MONGO_INITDB_ROOT_PASSWORD: Ducthinh91
+volumes:
+  mongodb-chat:
