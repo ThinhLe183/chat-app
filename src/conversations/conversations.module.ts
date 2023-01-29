@@ -3,19 +3,13 @@ import { ConversationsService } from './conversations.service';
 import { ConversationsController } from './conversations.controller';
 import { PrismaModule } from 'src/common/prisma/prisma.module';
 import { UsersModule } from 'src/users/users.module';
-import { MessagesService } from '../messages/messages.service';
-import { ParticipantsService } from '../participants/participants.service';
-import { MessagesController } from 'src/messages/messages.controller';
-import { ParticipantsController } from 'src/participants/participants.controller';
+import { MessagesModule } from './messages/messages.module';
+import { ParticipantsModule } from './participants/participants.module';
 
 @Module({
-  imports: [PrismaModule, UsersModule],
-  controllers: [
-    ConversationsController,
-    MessagesController,
-    ParticipantsController,
-  ],
-  providers: [ConversationsService, MessagesService, ParticipantsService],
-  exports: [ConversationsService, MessagesService, ParticipantsService],
+  imports: [PrismaModule, UsersModule, MessagesModule, ParticipantsModule],
+  controllers: [ConversationsController],
+  providers: [ConversationsService],
+  exports: [ConversationsService],
 })
 export class ConversationsModule {}

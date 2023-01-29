@@ -4,7 +4,7 @@ import { PrismaService } from 'src/common/prisma/prisma.service';
 import { ConversationType, ELastMessage, EUser } from '@prisma/client';
 import { UpdateConversationDTO } from './dto/update-DM.dto';
 import { ICrudOptions } from 'src/common/interfaces/prisma/ICrudOptions';
-import { ParticipantsService } from '../participants/participants.service';
+import { ParticipantsService } from './participants/participants.service';
 
 @Injectable()
 export class ConversationsService {

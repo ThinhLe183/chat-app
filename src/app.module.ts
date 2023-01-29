@@ -4,6 +4,8 @@ import { ConfigModule } from '@nestjs/config';
 import { AuthModule } from './auth/auth.module';
 import { PrismaModule } from './common/prisma/prisma.module';
 import { ConversationsModule } from './conversations/conversations.module';
+import { MessagesModule } from './conversations/messages/messages.module';
+import { ParticipantsModule } from './conversations/participants/participants.module';
 
 @Module({
   imports: [
@@ -12,6 +14,8 @@ import { ConversationsModule } from './conversations/conversations.module';
     AuthModule,
     PrismaModule,
     ConversationsModule,
+    MessagesModule,
+    ParticipantsModule,
   ],
 })
 export class AppModule {}

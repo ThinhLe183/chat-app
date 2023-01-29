@@ -5,7 +5,7 @@ import {
   ForbiddenException,
 } from '@nestjs/common';
 import { BadRequestException } from '@nestjs/common/exceptions';
-import { ParticipantsService } from 'src/participants/participants.service';
+import { ParticipantsService } from 'src/conversations/participants/participants.service';
 
 @Injectable()
 export class ConversationGuard implements CanActivate {
@@ -23,7 +23,6 @@ export class ConversationGuard implements CanActivate {
     if (!isInConversation) {
       throw new ForbiddenException('User is not in this conversation');
     }
-    console.log('working');
     return true;
   }
 }
