@@ -1,16 +1,10 @@
-version: '3.8'
+version: '3.9'
 services:
-  mongodb:
-    image: mongo:4.2.3-bionic
-    restart: always
-    container_name: mongo-database
+  redis:
+    image: redis:alpine
     ports:
-      - 27017:27017
+      - '6379:6379'
     volumes:
-      - mongodb-chat:/data/db
-    environment:
-      MONGO_INITDB_DATABASE: chat-app
-      MONGO_INITDB_ROOT_USERNAME: leducthinh183
-      MONGO_INITDB_ROOT_PASSWORD: Ducthinh91
+      - redis-data:/data
 volumes:
-  mongodb-chat:
+  redis-data:

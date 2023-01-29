@@ -13,7 +13,7 @@ import { UpdateConversationDTO } from './dto/update-DM.dto';
 import { CreateDirectMessageDTO } from './dto/create-DM.dto';
 import { ConversationGuard } from './guards/conversation.guard';
 import { UserInfo } from 'src/users/decorators/user-info.decorator';
-import { User } from '@prisma/client';
+import { IUserInfo } from 'src/common/interfaces/user/userInfo.interface';
 
 @UseGuards(JwtAuthGuard)
 @Controller('conversations')
@@ -31,11 +31,13 @@ export class ConversationsController {
   }
 
   @Post()
-  async createDM(@Body() dto: CreateDirectMessageDTO, @UserInfo() user: User) {
-    const { id, username, avatar, name } = user;
+  async createDM(
+    @Body() dto: CreateDirectMessageDTO,
+    @UserInfo() user: IUserInfo,
+  ) {
     return await this.conversationsService.createDirectConversation(
       dto.participant_ids,
-      { id, username, avatar, name },
+      user,
     );
   }
 

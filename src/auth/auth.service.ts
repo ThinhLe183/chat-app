@@ -11,12 +11,12 @@ import * as bcrypt from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
 import { RegisterDto } from './dto/register.dto';
 import { LoginDto } from './dto/login.dto';
+import { IUserInfo } from 'src/common/interfaces/user/userInfo.interface';
 
 @Injectable()
 export class AuthService {
   constructor(
     private usersService: UsersService,
-    private prisma: PrismaService,
     private jwtService: JwtService,
   ) {}
 
@@ -25,7 +25,7 @@ export class AuthService {
     return this.login(user);
   }
 
-  async login(user: any) {
+  async login(user: IUserInfo) {
     return {
       user_id: user.id,
       access_token: await this.generateNewAccessToken(user),
@@ -34,12 +34,12 @@ export class AuthService {
     };
   }
 
-  async validateUser(dto: LoginDto) {
+  async validateUser(dto: LoginDto): Promise<IUserInfo> {
     const user = await this.usersService.findOneByUsername(dto.username);
     if (!user) throw new BadRequestException('User does not exist');
     const isMatch = await bcrypt.compare(dto.password, user.password);
     if (!isMatch) throw new UnauthorizedException('Password incorrect');
-    const { password, ...result } = user;
+    const { password, email, created_at, updated_at, ...result } = user;
     return result;
   }
 

@@ -6,7 +6,7 @@ import { CreateMessageDto } from './dto/create-message.dto';
 import { GetMessagesDTO } from './dto/get-messages.dto';
 import { ConversationGuard } from 'src/conversations/guards/conversation.guard';
 import { UserInfo } from 'src/users/decorators/user-info.decorator';
-import { User } from '@prisma/client';
+import { IUserInfo } from 'src/common/interfaces/user/userInfo.interface';
 
 @UseGuards(JwtAuthGuard, ConversationGuard)
 @Controller('conversations/:conversation_id/messages')
@@ -35,7 +35,7 @@ export class MessagesController {
   @Post()
   async createMessage(
     @Param('conversation_id') conversation_id: string,
-    @UserInfo() user: User,
+    @UserInfo() user: IUserInfo,
     @Body() dto: CreateMessageDto,
   ) {
     return await this.messagesService.createMessage(conversation_id, dto, user);

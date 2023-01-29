@@ -3,7 +3,7 @@ import { PassportStrategy } from '@nestjs/passport';
 import { Injectable } from '@nestjs/common';
 import { UsersService } from 'src/users/users.service';
 import { BadRequestException } from '@nestjs/common/exceptions';
-import { User } from '@prisma/client';
+import { IUserInfo } from 'src/common/interfaces/user/userInfo.interface';
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
@@ -15,10 +15,10 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     });
   }
 
-  async validate(payload: any) {
+  async validate(payload: any): Promise<IUserInfo> {
     const user = await this.usersService.findOneById(payload.userId);
     if (!user) throw new BadRequestException('User does not exist');
-    const { password, ...result } = user;
+    const { password, email, created_at, updated_at, ...result } = user;
     return result;
   }
 }

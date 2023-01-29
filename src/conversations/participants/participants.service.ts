@@ -38,13 +38,16 @@ export class ParticipantsService {
   }
 
   async setReadMessage(id: string, uid: string) {
-    return this.prisma.conversation.update({
-      where: { id },
-      data: {
-        participants: {
-          updateMany: { where: { id: uid }, data: { last_seen: now() } },
+    return await this.prisma.conversation
+      .update({
+        where: { id },
+        data: {
+          participants: {
+            updateMany: { where: { id: uid }, data: { last_seen: now() } },
+          },
         },
-      },
-    });
+        select: { participants: { select: { id: true, last_seen: true } } },
+      })
+      .then((res) => res.participants.find((p) => p.id === uid));
   }
 }

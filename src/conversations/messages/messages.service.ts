@@ -5,6 +5,7 @@ import { CreateMessageDto } from './dto/create-message.dto';
 import { User } from '@prisma/client';
 import { GetMessagesDTO } from './dto/get-messages.dto';
 import { ConversationsService } from 'src/conversations/conversations.service';
+import { IUserInfo } from 'src/common/interfaces/user/userInfo.interface';
 
 @Injectable()
 export class MessagesService {
@@ -16,17 +17,12 @@ export class MessagesService {
   async createMessage(
     conversation_id: string,
     dto: CreateMessageDto,
-    user: User,
+    user: IUserInfo,
   ) {
     const message = await this.prisma.message.create({
       data: {
         conversation_id,
-        author: {
-          id: user.id,
-          username: user.username,
-          name: user.name,
-          avatar: user.avatar,
-        },
+        author: user,
         ...dto,
       },
     });
