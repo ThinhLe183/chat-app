@@ -25,7 +25,7 @@ export class ParticipantsService {
       select: { id: true, username: true, avatar: true, name: true },
     });
     return users.map((user) => {
-      return { ...user, nickname: null, last_seen: null };
+      return { ...user, nickname: null, last_read: null };
     });
   }
 
@@ -37,16 +37,16 @@ export class ParticipantsService {
     });
   }
 
-  async setReadMessage(id: string, uid: string) {
+  async setReadMessage(id: string, uid: string, msgid: string) {
     return await this.prisma.conversation
       .update({
         where: { id },
         data: {
           participants: {
-            updateMany: { where: { id: uid }, data: { last_seen: now() } },
+            updateMany: { where: { id: uid }, data: { last_read: msgid } },
           },
         },
-        select: { participants: { select: { id: true, last_seen: true } } },
+        select: { participants: { select: { id: true, last_read: true } } },
       })
       .then((res) => res.participants.find((p) => p.id === uid));
   }

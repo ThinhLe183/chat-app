@@ -2,8 +2,6 @@ import { Injectable } from '@nestjs/common';
 
 import { PrismaService } from 'src/common/prisma/prisma.service';
 import { CreateMessageDto } from './dto/create-message.dto';
-import { User } from '@prisma/client';
-import { GetMessagesDTO } from './dto/get-messages.dto';
 import { ConversationsService } from 'src/conversations/conversations.service';
 import { IUserInfo } from 'src/common/interfaces/user/userInfo.interface';
 
@@ -26,14 +24,10 @@ export class MessagesService {
         ...dto,
       },
     });
-    await this.conversationsService.incAndSetLastMessage(conversation_id, {
-      id: message.id,
-      user_id: user.id,
-      msg: message.msg,
-      type: message.type,
-      created_at: message.created_at,
-      updated_at: message.updated_at,
-    });
+    await this.conversationsService.incAndSetLastMessage(
+      conversation_id,
+      message,
+    );
     return message;
   }
 
@@ -43,13 +37,13 @@ export class MessagesService {
     });
   }
 
-  async findByConversationId(conversation_id: string, dto: GetMessagesDTO) {
+  async findByConversationId(conversation_id: string, before?: string) {
     return await this.prisma.message.findMany({
       where: {
         conversation_id,
-        created_at: { gt: dto.after, lt: dto.before },
+        ts: { lt: before },
       },
-      take: dto.take && 20,
+      take: 30,
     });
   }
 }

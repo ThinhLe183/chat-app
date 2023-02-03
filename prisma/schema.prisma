@@ -9,11 +9,14 @@ datasource db {
 }
 
 type ELastMessage {
-  id String @db.ObjectId
-  user_id String
-  msg String 
+  id String  @db.ObjectId
   type MessageType
-  created_at DateTime
+  author EUser
+  conversation_id String @db.ObjectId
+  msg String
+  mentions String[]
+  attachments String[]
+  ts DateTime @default(now())  
   updated_at DateTime
 }
 
@@ -29,7 +32,7 @@ type EParticipant {
   username String
   avatar String?
   nickname String?
-  last_seen DateTime?
+  last_read String? @db.ObjectId //message id
 }
 enum ConversationType {
   DM
@@ -45,7 +48,7 @@ model User {
   username  String @unique()
   avatar String?
   name String
-  email String @unique  
+  email String @unique()  
   password String
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
@@ -72,8 +75,8 @@ model Message {
   msg String
   mentions String[]
   attachments String[]
-  created_at DateTime @default(now())  
+  ts DateTime @default(now())  
   updated_at DateTime @updatedAt
-  @@index([conversation_id,created_at(sort: Desc)])
+  @@index([conversation_id,ts(sort: Desc)])
 }
 

@@ -1,9 +1,16 @@
-import { Controller, Get, Post, Body, Param, Req } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Param,
+  ParseIntPipe,
+  BadRequestException,
+} from '@nestjs/common';
 import { MessagesService } from './messages.service';
 import { Query, UseGuards } from '@nestjs/common/decorators';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { CreateMessageDto } from './dto/create-message.dto';
-import { GetMessagesDTO } from './dto/get-messages.dto';
 import { ConversationGuard } from 'src/conversations/guards/conversation.guard';
 import { UserInfo } from 'src/users/decorators/user-info.decorator';
 import { IUserInfo } from 'src/common/interfaces/user/userInfo.interface';
@@ -24,12 +31,16 @@ export class MessagesController {
   @Get()
   async getMessages(
     @Param('conversation_id') conversation_id: string,
-    @Query() dto: GetMessagesDTO,
+    @Query('before') before?: string,
   ) {
-    return await this.messagesService.findByConversationId(
-      conversation_id,
-      dto,
-    );
+    try {
+      return await this.messagesService.findByConversationId(
+        conversation_id,
+        before,
+      );
+    } catch (error) {
+      throw new BadRequestException('Invalid query please check again');
+    }
   }
 
   @Post()

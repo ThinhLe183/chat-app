@@ -5,7 +5,6 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 
-import { PrismaService } from 'src/common/prisma/prisma.service';
 import { UsersService } from 'src/users/users.service';
 import * as bcrypt from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
@@ -27,7 +26,7 @@ export class AuthService {
 
   async login(user: IUserInfo) {
     return {
-      user_id: user.id,
+      user: user,
       access_token: await this.generateNewAccessToken(user),
       expires_in: process.env.ACCESS_TOKEN_EXPIRES_IN,
       refresh_token: await this.generateNewRefreshToken(user),
@@ -39,7 +38,7 @@ export class AuthService {
     if (!user) throw new BadRequestException('User does not exist');
     const isMatch = await bcrypt.compare(dto.password, user.password);
     if (!isMatch) throw new UnauthorizedException('Password incorrect');
-    const { password, email, created_at, updated_at, ...result } = user;
+    const { password, created_at, updated_at, ...result } = user;
     return result;
   }
 
@@ -50,6 +49,7 @@ export class AuthService {
       });
       const timeRemaining = decoded.exp - Math.round(Date.now() / 1000); //seconds
       const user = await this.usersService.findOneById(decoded.userId);
+      if (!user) throw new Error();
       return {
         access_token: await this.generateNewAccessToken(user),
         refresh_token: await this.generateNewRefreshToken(user, timeRemaining),
@@ -59,8 +59,12 @@ export class AuthService {
     }
   }
 
-  private async generateNewAccessToken(user: any) {
-    const payload = { username: user.username, userId: user.id };
+  private async generateNewAccessToken(user: IUserInfo) {
+    const payload = {
+      username: user.username,
+      userId: user.id,
+      email: user.email,
+    };
     const accessToken = this.jwtService.sign(payload, {
       secret: process.env.ACCESS_TOKEN_KEY,
       expiresIn: parseInt(process.env.ACCESS_TOKEN_EXPIRES_IN || '3600'),
@@ -68,8 +72,15 @@ export class AuthService {
     return accessToken;
   }
 
-  private async generateNewRefreshToken(user: any, timeRemaining?: number) {
-    const payload = { username: user.username, userId: user.id };
+  private async generateNewRefreshToken(
+    user: IUserInfo,
+    timeRemaining?: number,
+  ) {
+    const payload = {
+      username: user.username,
+      userId: user.id,
+      email: user.email,
+    };
     const refreshToken = this.jwtService.sign(payload, {
       secret: process.env.REFRESH_TOKEN_KEY,
       expiresIn: timeRemaining || process.env.REFRESH_TOKEN_EXPIRES_IN,

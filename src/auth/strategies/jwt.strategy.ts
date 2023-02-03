@@ -18,7 +18,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
   async validate(payload: any): Promise<IUserInfo> {
     const user = await this.usersService.findOneById(payload.userId);
     if (!user) throw new BadRequestException('User does not exist');
-    const { password, email, created_at, updated_at, ...result } = user;
+    const { password, created_at, updated_at, ...result } = user;
     return result;
   }
 }

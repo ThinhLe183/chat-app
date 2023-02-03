@@ -1,4 +1,12 @@
-import { Controller, Get, Param, Patch, Put, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Param,
+  Patch,
+  Put,
+  UseGuards,
+} from '@nestjs/common';
 import { ParticipantsService } from './participants.service';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { ConversationGuard } from 'src/conversations/guards/conversation.guard';
@@ -26,7 +34,8 @@ export class ParticipantsController {
   async updateReadMessage(
     @Param('conversation_id') id: string,
     @UserInfo('id') uid: string,
+    @Body('last_read') msgid: string,
   ) {
-    return await this.participantsService.setReadMessage(id, uid);
+    return await this.participantsService.setReadMessage(id, uid, msgid);
   }
 }

@@ -12,7 +12,6 @@ import {
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
 
-import { Request } from 'express';
 import { LocalAuthGuard } from './guards/local-auth.guard';
 import { RegisterDto } from './dto/register.dto';
 import { UserInfo } from 'src/users/decorators/user-info.decorator';
