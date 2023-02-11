@@ -1,6 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { EParticipant } from '@prisma/client';
-import { now } from 'mongoose';
+import { Participant } from '@prisma/client';
 import { PrismaService } from 'src/common/prisma/prisma.service';
 import { UsersService } from 'src/users/users.service';
 
@@ -20,7 +19,7 @@ export class ParticipantsService {
       .then((res) => res?.participants);
   }
 
-  async createParticipantByIds(uids: string[]): Promise<EParticipant[]> {
+  async createParticipantByIds(uids: string[]): Promise<Participant[]> {
     const users = await this.usersService.findByIds(uids, {
       select: { id: true, username: true, avatar: true, name: true },
     });

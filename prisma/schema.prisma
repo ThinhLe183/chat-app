@@ -8,32 +8,32 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-type ELastMessage {
-  id String  @db.ObjectId
-  type MessageType
-  author EUser
-  conversation_id String @db.ObjectId
-  msg String
-  mentions String[]
-  attachments String[]
-  ts DateTime @default(now())  
-  updated_at DateTime
-}
+// type LastMessage {
+//   id String  @db.ObjectId
+//   type MessageType
+//   author Author
+//   conversation_id String @db.ObjectId
+//   msg String
+//   mentions String[]
+//   attachments String[]
+//   ts DateTime @default(now())  
+//   updated_at DateTime
+// }
 
-type EUser {
-  id String @db.ObjectId
-  username String
-  avatar String?
-  name String
-}
-type EParticipant {
-  id String @db.ObjectId
-  name String
-  username String
-  avatar String?
-  nickname String?
-  last_read String? @db.ObjectId //message id
-}
+// type Author {
+//   id String @db.ObjectId
+//   username String
+//   avatar String?
+//   name String
+// }
+// type Participant {
+//   // id String @db.ObjectId
+//   // name String
+//   // username String
+//   // avatar String?
+//   nickname String?
+//   last_read String? @db.ObjectId //message id
+// }
 enum ConversationType {
   DM
   GROUP_DM
@@ -48,7 +48,7 @@ model User {
   username  String @unique()
   avatar String?
   name String
-  email String @unique()  
+  email String @unique()
   password String
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
@@ -60,8 +60,8 @@ model Conversation {
   name String?
   icon String?
   owner_id String? @db.ObjectId
-  participants EParticipant[] 
-  last_message ELastMessage?
+  participants User[] 
+  last_message Message
   total_messages_sent Int @default(0)
   created_at DateTime @default(now())  
   updated_at DateTime @updatedAt
@@ -70,7 +70,7 @@ model Conversation {
 model Message {
   id        String  @id @default(auto()) @map("_id") @db.ObjectId
   type MessageType
-  author EUser
+  author User
   conversation_id String @db.ObjectId
   msg String
   mentions String[]

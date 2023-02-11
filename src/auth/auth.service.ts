@@ -1,5 +1,4 @@
 import {
-  BadRequestException,
   HttpException,
   Injectable,
   UnauthorizedException,
@@ -11,6 +10,7 @@ import { JwtService } from '@nestjs/jwt';
 import { RegisterDto } from './dto/register.dto';
 import { LoginDto } from './dto/login.dto';
 import { IUserInfo } from 'src/common/interfaces/user/userInfo.interface';
+import { User } from '@prisma/client';
 
 @Injectable()
 export class AuthService {
@@ -20,22 +20,20 @@ export class AuthService {
   ) {}
 
   async register(dto: RegisterDto) {
-    const user = await this.usersService.createUser(dto);
-    return this.login(user);
+    await this.usersService.createUser(dto);
   }
 
   async login(user: IUserInfo) {
     return {
       user: user,
       access_token: await this.generateNewAccessToken(user),
-      expires_in: process.env.ACCESS_TOKEN_EXPIRES_IN,
       refresh_token: await this.generateNewRefreshToken(user),
     };
   }
 
   async validateUser(dto: LoginDto): Promise<IUserInfo> {
     const user = await this.usersService.findOneByUsername(dto.username);
-    if (!user) throw new BadRequestException('User does not exist');
+    if (!user) throw new UnauthorizedException(`Username doesn't exist`);
     const isMatch = await bcrypt.compare(dto.password, user.password);
     if (!isMatch) throw new UnauthorizedException('Password incorrect');
     const { password, created_at, updated_at, ...result } = user;
@@ -51,6 +49,7 @@ export class AuthService {
       const user = await this.usersService.findOneById(decoded.userId);
       if (!user) throw new Error();
       return {
+        user: user,
         access_token: await this.generateNewAccessToken(user),
         refresh_token: await this.generateNewRefreshToken(user, timeRemaining),
       };
@@ -59,7 +58,7 @@ export class AuthService {
     }
   }
 
-  private async generateNewAccessToken(user: IUserInfo) {
+  private async generateNewAccessToken(user: IUserInfo | User) {
     const payload = {
       username: user.username,
       userId: user.id,
@@ -73,7 +72,7 @@ export class AuthService {
   }
 
   private async generateNewRefreshToken(
-    user: IUserInfo,
+    user: IUserInfo | User,
     timeRemaining?: number,
   ) {
     const payload = {

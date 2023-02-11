@@ -15,7 +15,7 @@ export class MessagesService {
   async createMessage(
     conversation_id: string,
     dto: CreateMessageDto,
-    user: IUserInfo,
+    { email, ...user }: IUserInfo,
   ) {
     const message = await this.prisma.message.create({
       data: {

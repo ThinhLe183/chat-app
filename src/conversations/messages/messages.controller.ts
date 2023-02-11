@@ -4,7 +4,6 @@ import {
   Post,
   Body,
   Param,
-  ParseIntPipe,
   BadRequestException,
 } from '@nestjs/common';
 import { MessagesService } from './messages.service';

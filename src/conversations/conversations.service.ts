@@ -1,10 +1,11 @@
 import { Injectable } from '@nestjs/common';
 
 import { PrismaService } from 'src/common/prisma/prisma.service';
-import { ConversationType, ELastMessage, EUser } from '@prisma/client';
+import { ConversationType, LastMessage } from '@prisma/client';
 import { UpdateConversationDTO } from './dto/update-DM.dto';
 import { ICrudOptions } from 'src/common/interfaces/prisma/ICrudOptions';
 import { ParticipantsService } from './participants/participants.service';
+import { IUserInfo } from 'src/common/interfaces/user/userInfo.interface';
 
 @Injectable()
 export class ConversationsService {
@@ -54,14 +55,17 @@ export class ConversationsService {
     });
   }
 
-  async incAndSetLastMessage(id: string, last_message: ELastMessage) {
+  async incAndSetLastMessage(id: string, last_message: LastMessage) {
     return await this.prisma.conversation.update({
       where: { id },
       data: { last_message, total_messages_sent: { increment: 1 } },
     });
   }
 
-  async createDirectConversation(participant_ids: string[], user: EUser) {
+  async createDirectConversation(
+    participant_ids: string[],
+    { email, ...user }: IUserInfo,
+  ) {
     const type =
       participant_ids.length < 2
         ? ConversationType.DM

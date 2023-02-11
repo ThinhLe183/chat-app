@@ -21,7 +21,8 @@ export class ConversationsController {
   constructor(private readonly conversationsService: ConversationsService) {}
   @Get()
   async getAllConversations(@UserInfo('id') uid: string) {
-    return this.conversationsService.findByUserId(uid);
+    console.log(uid);
+    return await this.conversationsService.findByUserId(uid);
   }
 
   @Get(':conversation_id')
