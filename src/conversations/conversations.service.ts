@@ -71,7 +71,7 @@ export class ConversationsService {
         ? ConversationType.DM
         : ConversationType.GROUP_DM;
 
-    // return existed conversation if it exist ( just for DM conversation )
+    // return existed conversation if it exist ( just available for DM conversation )
     if (type === ConversationType.DM) {
       const existedConversation =
         await this.find1On1ConversationContainingUserId(
@@ -80,7 +80,7 @@ export class ConversationsService {
         );
       if (existedConversation) return existedConversation;
     }
-
+    // !Serialize these id exclude duplicate and this user.id
     const participants = await this.participantsService.createParticipantByIds(
       participant_ids,
     );

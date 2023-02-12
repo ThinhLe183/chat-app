@@ -24,10 +24,15 @@ export class MessagesService {
         ...dto,
       },
     });
-    await this.conversationsService.incAndSetLastMessage(
-      conversation_id,
-      message,
-    );
+    await this.conversationsService.incAndSetLastMessage(conversation_id, {
+      type: message.type,
+      author_id: message.author.id,
+      author_name: message.author.name,
+      msg: message.msg,
+      mentions: message.mentions,
+      attachments: message.attachments,
+      ts: message.ts,
+    });
     return message;
   }
 

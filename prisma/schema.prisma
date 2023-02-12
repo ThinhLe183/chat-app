@@ -8,40 +8,14 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-// type LastMessage {
-//   id String  @db.ObjectId
-//   type MessageType
-//   author Author
-//   conversation_id String @db.ObjectId
-//   msg String
-//   mentions String[]
-//   attachments String[]
-//   ts DateTime @default(now())  
-//   updated_at DateTime
-// }
-
-// type Author {
-//   id String @db.ObjectId
-//   username String
-//   avatar String?
-//   name String
-// }
-// type Participant {
-//   // id String @db.ObjectId
-//   // name String
-//   // username String
-//   // avatar String?
-//   nickname String?
-//   last_read String? @db.ObjectId //message id
-// }
 enum ConversationType {
   DM
   GROUP_DM
 }
 enum MessageType {
-  TEXT
-  IMAGE
-  NOTIFY
+  DEFAULT
+  PARTICIPANT_ADD
+  PARTICIPANT_DELETE
 }
 model User {
   id        String  @id @default(auto()) @map("_id") @db.ObjectId
@@ -60,8 +34,8 @@ model Conversation {
   name String?
   icon String?
   owner_id String? @db.ObjectId
-  participants User[] 
-  last_message Message
+  participants Participant[] 
+  last_message LastMessage?
   total_messages_sent Int @default(0)
   created_at DateTime @default(now())  
   updated_at DateTime @updatedAt
@@ -70,7 +44,7 @@ model Conversation {
 model Message {
   id        String  @id @default(auto()) @map("_id") @db.ObjectId
   type MessageType
-  author User
+  author Author
   conversation_id String @db.ObjectId
   msg String
   mentions String[]
@@ -78,5 +52,31 @@ model Message {
   ts DateTime @default(now())  
   updated_at DateTime @updatedAt
   @@index([conversation_id,ts(sort: Desc)])
+}
+
+type Author {
+  id        String  @db.ObjectId
+  username  String 
+  avatar String?
+  name String
+}
+
+type Participant {
+  id        String  @db.ObjectId
+  username  String 
+  avatar String?
+  name String
+  nickname String?
+  last_read String? @db.ObjectId
+}
+
+type LastMessage {
+  type MessageType
+  author_id String
+  author_name String
+  msg String
+  mentions String[]
+  attachments String[]
+  ts DateTime
 }
 
